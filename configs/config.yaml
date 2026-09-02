@@ -1,0 +1,20 @@
+# Global project configuration.
+# Individual modules (SUMO env, training scripts) will read from this file
+# instead of hardcoding paths or hyperparameters. Later phases will add
+# reward_config.yaml and scenarios.yaml alongside this one.
+
+project:
+  name: "traffic-signal-ai"
+  seed: 42
+
+paths:
+  sumo_networks: "sumo/networks"
+  sumo_routes: "sumo/routes"
+  sumo_configs: "sumo/configs"
+  models: "models"
+  results: "results"
+
+# Placeholder sections — filled in as their phases arrive.
+simulation: {}
+agent: {}
+reward: {}
