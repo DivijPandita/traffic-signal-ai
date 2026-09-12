@@ -1,0 +1,13 @@
+<edges>
+    <!-- Incoming to intersection (vehicles approaching C) -->
+    <edge id="N2C" from="N" to="C" type="road"/>
+    <edge id="S2C" from="S" to="C" type="road"/>
+    <edge id="E2C" from="E" to="C" type="road"/>
+    <edge id="W2C" from="W" to="C" type="road"/>
+
+    <!-- Outgoing from intersection (vehicles leaving C) -->
+    <edge id="C2N" from="C" to="N" type="road"/>
+    <edge id="C2S" from="C" to="S" type="road"/>
+    <edge id="C2E" from="C" to="E" type="road"/>
+    <edge id="C2W" from="C" to="W" type="road"/>
+</edges>

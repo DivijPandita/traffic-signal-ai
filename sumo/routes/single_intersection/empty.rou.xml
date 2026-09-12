@@ -1,0 +1,5 @@
+<routes>
+    <!-- Intentionally empty. Phase 4 will populate this with vehicle
+         flows/routes. This file exists now only so the .sumocfg below
+         has something valid to reference and SUMO can start cleanly. -->
+</routes>
