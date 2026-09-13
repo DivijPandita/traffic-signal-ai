@@ -1,0 +1,27 @@
+# Metadata for each traffic scenario. Training/evaluation scripts (Phase 9+)
+# will loop over this list rather than hardcoding scenario names/paths.
+
+scenarios:
+  - name: low
+    sumocfg: sumo/configs/scenario_low.sumocfg
+    description: "Light traffic, ~200 veh/h per approach"
+
+  - name: moderate
+    sumocfg: sumo/configs/scenario_moderate.sumocfg
+    description: "Typical daytime traffic, ~500 veh/h per approach"
+
+  - name: heavy
+    sumocfg: sumo/configs/scenario_heavy.sumocfg
+    description: "Congested traffic, ~900 veh/h per approach"
+
+  - name: peak
+    sumocfg: sumo/configs/scenario_peak.sumocfg
+    description: "Rush-hour traffic, ~1200 veh/h per approach"
+
+  - name: emergency
+    sumocfg: sumo/configs/scenario_emergency.sumocfg
+    description: "Moderate traffic with one ambulance event at t=300s"
+
+  - name: high_emission
+    sumocfg: sumo/configs/scenario_high_emission.sumocfg
+    description: "Heavy traffic with elevated truck/bus share to stress fuel/CO2 reward terms"

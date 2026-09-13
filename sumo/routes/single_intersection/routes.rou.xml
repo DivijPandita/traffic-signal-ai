@@ -2,7 +2,7 @@
     <!-- ===================== VEHICLE TYPES ===================== -->
     <!-- emissionClass values come from the HBEFA3 database bundled with
          SUMO. Different classes burn fuel and emit CO2 at different rates
-         per second of driving/idling -- this is what makes fuel/CO2
+         per second of driving or idling; this is what makes fuel/CO2
          meaningful in the reward function later. -->
 
     <vType id="car" vClass="passenger" length="5.0" accel="2.6" decel="4.5"
@@ -30,7 +30,7 @@
     <!-- Every possible movement through junction C: each approach can go
          straight or turn toward either of the other two directions.
          netconvert already generated the internal turning lanes in
-         Phase 3 -- a route just needs the entry and exit edge. -->
+         Phase 3; a route just needs the entry and exit edge. -->
 
     <!-- From North -->
     <route id="N_S" edges="N2C C2S"/>
