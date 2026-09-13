@@ -1,0 +1,13 @@
+<configuration>
+    <input>
+        <net-file value="../networks/single_intersection/single_intersection.net.xml"/>
+        <route-files value="../routes/single_intersection/routes.rou.xml,../routes/single_intersection/demand_low.rou.xml"/>
+    </input>
+    <time>
+        <begin value="0"/>
+        <end value="3600"/>
+    </time>
+    <processing>
+        <time-to-teleport value="300"/>
+    </processing>
+</configuration>
