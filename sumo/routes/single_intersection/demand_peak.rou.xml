@@ -1,17 +1,17 @@
 <routes>
-    <flow id="peak_N_S" type="car" route="N_S" begin="0" end="3600" vehsPerHour="720" departLane="best" departSpeed="max"/>
-    <flow id="peak_N_E" type="car" route="N_E" begin="0" end="3600" vehsPerHour="300" departLane="best" departSpeed="max"/>
-    <flow id="peak_N_W" type="car" route="N_W" begin="0" end="3600" vehsPerHour="180" departLane="best" departSpeed="max"/>
+    <flow id="peak_N_S" type="car" route="N_S" begin="0" end="3600" vehsPerHour="380" departLane="best" departSpeed="max"/>
+    <flow id="peak_N_E" type="car" route="N_E" begin="0" end="3600" vehsPerHour="150" departLane="best" departSpeed="max"/>
+    <flow id="peak_N_W" type="car" route="N_W" begin="0" end="3600" vehsPerHour="90" departLane="best" departSpeed="max"/>
 
-    <flow id="peak_S_N" type="car" route="S_N" begin="0" end="3600" vehsPerHour="720" departLane="best" departSpeed="max"/>
-    <flow id="peak_S_W" type="car" route="S_W" begin="0" end="3600" vehsPerHour="300" departLane="best" departSpeed="max"/>
-    <flow id="peak_S_E" type="car" route="S_E" begin="0" end="3600" vehsPerHour="180" departLane="best" departSpeed="max"/>
+    <flow id="peak_S_N" type="car" route="S_N" begin="0" end="3600" vehsPerHour="380" departLane="best" departSpeed="max"/>
+    <flow id="peak_S_W" type="car" route="S_W" begin="0" end="3600" vehsPerHour="150" departLane="best" departSpeed="max"/>
+    <flow id="peak_S_E" type="car" route="S_E" begin="0" end="3600" vehsPerHour="90" departLane="best" departSpeed="max"/>
 
-    <flow id="peak_E_W" type="car" route="E_W" begin="0" end="3600" vehsPerHour="720" departLane="best" departSpeed="max"/>
-    <flow id="peak_E_N" type="car" route="E_N" begin="0" end="3600" vehsPerHour="300" departLane="best" departSpeed="max"/>
-    <flow id="peak_E_S" type="car" route="E_S" begin="0" end="3600" vehsPerHour="180" departLane="best" departSpeed="max"/>
+    <flow id="peak_E_W" type="car" route="E_W" begin="0" end="3600" vehsPerHour="380" departLane="best" departSpeed="max"/>
+    <flow id="peak_E_N" type="car" route="E_N" begin="0" end="3600" vehsPerHour="150" departLane="best" departSpeed="max"/>
+    <flow id="peak_E_S" type="car" route="E_S" begin="0" end="3600" vehsPerHour="90" departLane="best" departSpeed="max"/>
 
-    <flow id="peak_W_E" type="car" route="W_E" begin="0" end="3600" vehsPerHour="720" departLane="best" departSpeed="max"/>
-    <flow id="peak_W_S" type="car" route="W_S" begin="0" end="3600" vehsPerHour="300" departLane="best" departSpeed="max"/>
-    <flow id="peak_W_N" type="car" route="W_N" begin="0" end="3600" vehsPerHour="180" departLane="best" departSpeed="max"/>
+    <flow id="peak_W_E" type="car" route="W_E" begin="0" end="3600" vehsPerHour="380" departLane="best" departSpeed="max"/>
+    <flow id="peak_W_S" type="car" route="W_S" begin="0" end="3600" vehsPerHour="150" departLane="best" departSpeed="max"/>
+    <flow id="peak_W_N" type="car" route="W_N" begin="0" end="3600" vehsPerHour="90" departLane="best" departSpeed="max"/>
 </routes>

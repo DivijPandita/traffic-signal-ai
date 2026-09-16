@@ -1,17 +1,17 @@
 <routes>
-    <flow id="heavy_N_S" type="car" route="N_S" begin="0" end="3600" vehsPerHour="540" departLane="best" departSpeed="max"/>
-    <flow id="heavy_N_E" type="car" route="N_E" begin="0" end="3600" vehsPerHour="225" departLane="best" departSpeed="max"/>
-    <flow id="heavy_N_W" type="car" route="N_W" begin="0" end="3600" vehsPerHour="135" departLane="best" departSpeed="max"/>
+    <flow id="heavy_N_S" type="car" route="N_S" begin="0" end="3600" vehsPerHour="380" departLane="best" departSpeed="max"/>
+    <flow id="heavy_N_E" type="car" route="N_E" begin="0" end="3600" vehsPerHour="160" departLane="best" departSpeed="max"/>
+    <flow id="heavy_N_W" type="car" route="N_W" begin="0" end="3600" vehsPerHour="95" departLane="best" departSpeed="max"/>
 
-    <flow id="heavy_S_N" type="car" route="S_N" begin="0" end="3600" vehsPerHour="540" departLane="best" departSpeed="max"/>
-    <flow id="heavy_S_W" type="car" route="S_W" begin="0" end="3600" vehsPerHour="225" departLane="best" departSpeed="max"/>
-    <flow id="heavy_S_E" type="car" route="S_E" begin="0" end="3600" vehsPerHour="135" departLane="best" departSpeed="max"/>
+    <flow id="heavy_S_N" type="car" route="S_N" begin="0" end="3600" vehsPerHour="380" departLane="best" departSpeed="max"/>
+    <flow id="heavy_S_W" type="car" route="S_W" begin="0" end="3600" vehsPerHour="160" departLane="best" departSpeed="max"/>
+    <flow id="heavy_S_E" type="car" route="S_E" begin="0" end="3600" vehsPerHour="95" departLane="best" departSpeed="max"/>
 
-    <flow id="heavy_E_W" type="car" route="E_W" begin="0" end="3600" vehsPerHour="540" departLane="best" departSpeed="max"/>
-    <flow id="heavy_E_N" type="car" route="E_N" begin="0" end="3600" vehsPerHour="225" departLane="best" departSpeed="max"/>
-    <flow id="heavy_E_S" type="car" route="E_S" begin="0" end="3600" vehsPerHour="135" departLane="best" departSpeed="max"/>
+    <flow id="heavy_E_W" type="car" route="E_W" begin="0" end="3600" vehsPerHour="380" departLane="best" departSpeed="max"/>
+    <flow id="heavy_E_N" type="car" route="E_N" begin="0" end="3600" vehsPerHour="160" departLane="best" departSpeed="max"/>
+    <flow id="heavy_E_S" type="car" route="E_S" begin="0" end="3600" vehsPerHour="95" departLane="best" departSpeed="max"/>
 
-    <flow id="heavy_W_E" type="car" route="W_E" begin="0" end="3600" vehsPerHour="540" departLane="best" departSpeed="max"/>
-    <flow id="heavy_W_S" type="car" route="W_S" begin="0" end="3600" vehsPerHour="225" departLane="best" departSpeed="max"/>
-    <flow id="heavy_W_N" type="car" route="W_N" begin="0" end="3600" vehsPerHour="135" departLane="best" departSpeed="max"/>
+    <flow id="heavy_W_E" type="car" route="W_E" begin="0" end="3600" vehsPerHour="380" departLane="best" departSpeed="max"/>
+    <flow id="heavy_W_S" type="car" route="W_S" begin="0" end="3600" vehsPerHour="160" departLane="best" departSpeed="max"/>
+    <flow id="heavy_W_N" type="car" route="W_N" begin="0" end="3600" vehsPerHour="95" departLane="best" departSpeed="max"/>
 </routes>
