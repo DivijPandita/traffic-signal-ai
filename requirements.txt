@@ -5,3 +5,4 @@ matplotlib==3.9.0
 torch==2.3.1
 traci==1.27.1
 sumolib==1.27.1
+gymnasium==0.29.1
