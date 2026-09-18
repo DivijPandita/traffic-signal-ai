@@ -18,27 +18,22 @@ from environment.sumo_env import TrafficSignalEnv
 from agents.dqn_agent import DQNAgent
 from environment.state import get_state_dim
 
-
 def train(
     sumocfg_path: str,
     scenario_name: str,
-    num_episodes: int = 50,
-    max_episode_steps: int = 500,
-    seed: int = 42,
+    num_episodes: int = 150,
+    max_episode_steps: int = 700,
+    train_seeds: list = None,
     model_out_dir: str = "models/dqn",
     log_out_dir: str = "results/logs",
 ):
     os.makedirs(model_out_dir, exist_ok=True)
     os.makedirs(log_out_dir, exist_ok=True)
 
-    env = TrafficSignalEnv(
-        sumocfg_path,
-        max_episode_steps=max_episode_steps,
-        seed=seed,
-    )
+    if train_seeds is None:
+        train_seeds = list(range(10))  # seeds 0-9; eval uses 100+, no overlap
 
-    # One reset() call needed to discover action_dim/state_dim from
-    # the live traffic light program before constructing the agent.
+    env = TrafficSignalEnv(sumocfg_path, max_episode_steps=max_episode_steps, seed=train_seeds[0])
     obs, _ = env.reset()
     action_dim = env.action_space.n
     state_dim = obs.shape[0]
@@ -55,7 +50,8 @@ def train(
         writer.writerow(["episode", "total_reward", "avg_waiting_time", "epsilon", "avg_loss"])
 
     for episode in range(num_episodes):
-        obs, info = env.reset()
+        episode_seed = train_seeds[episode % len(train_seeds)]
+        obs, info = env.reset(seed=episode_seed)
         episode_reward = 0.0
         episode_waiting_times = []
         losses = []
@@ -100,8 +96,8 @@ def train(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--scenario", type=str, default="moderate")
-    parser.add_argument("--episodes", type=int, default=50)
-    parser.add_argument("--max-steps", type=int, default=500)
+    parser.add_argument("--episodes", type=int, default=150)
+    parser.add_argument("--max-steps", type=int, default=700)
     args = parser.parse_args()
 
     sumocfg = f"sumo/configs/scenario_{args.scenario}.sumocfg"

@@ -69,14 +69,15 @@ class TrafficSignalEnv(gym.Env):
         if self._conn is not None:
             self._conn.close()
 
+        if seed is not None:
+            self.seed_value = seed
+
         self._conn = SumoConnection(
             self.sumocfg_path, use_gui=self.use_gui, seed=self.seed_value
         )
         self._conn.start()
         self._episode_step_count = 0
 
-        # Build action space helper now that TraCI is connected and we
-        # can read the traffic light's real program.
         self._action_space_helper = ActionSpace(self.tls_id)
         if self.action_space is None:
             self.action_space = spaces.Discrete(self._action_space_helper.n)
@@ -87,27 +88,30 @@ class TrafficSignalEnv(gym.Env):
 
         obs = build_state_vector(self.tls_id, self._action_space_helper.green_phases)
         info = {}
-        return obs, info
+        return obs, info       
 
     def step(self, action: int):
         green_phases = self._action_space_helper.green_phases
         desired_phase = self._action_space_helper.action_to_phase_index(action)
         current_phase = traci.trafficlight.getPhase(self.tls_id)
 
+        arrived_this_rl_step = 0
+
         # If switching to a different green phase, insert the mandatory
-        # yellow transition first -- this is a real-world safety
-        # constraint, not an arbitrary implementation choice.
+        # yellow transition first.
         if desired_phase != current_phase:
             yellow_phase = get_yellow_phase_for(self.tls_id, current_phase)
             if yellow_phase is not None:
                 traci.trafficlight.setPhase(self.tls_id, yellow_phase)
                 for _ in range(self.yellow_duration):
                     self._conn.step()
+                    arrived_this_rl_step += traci.simulation.getArrivedNumber()
             traci.trafficlight.setPhase(self.tls_id, desired_phase)
 
         # Hold the chosen green phase for decision_interval seconds.
         for _ in range(self.decision_interval):
             self._conn.step()
+            arrived_this_rl_step += traci.simulation.getArrivedNumber()
 
         obs = build_state_vector(self.tls_id, green_phases)
 
@@ -125,9 +129,11 @@ class TrafficSignalEnv(gym.Env):
             "total_co2_emission": totals["total_co2_emission"],
             "total_fuel_consumption": totals["total_fuel_consumption"],
             "emergency_present": totals["emergency_present"],
+            "arrived_count": arrived_this_rl_step,
         }
 
         return obs, reward, terminated, truncated, info
+    
 
     def close(self):
         if self._conn is not None:
