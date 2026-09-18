@@ -146,10 +146,17 @@ def compare(scenario_name: str, sumocfg_path: str, model_path: str, eval_seeds: 
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--scenario", type=str, default="moderate")
+    args = parser.parse_args()
+
     EVAL_SEEDS = [100, 101, 102, 103, 104]  # held out, never used in training
+
     compare(
-        "moderate",
-        "sumo/configs/scenario_moderate.sumocfg",
-        "models/dqn/dqn_moderate.pt",
+        args.scenario,
+        f"sumo/configs/scenario_{args.scenario}.sumocfg",
+        f"models/dqn/dqn_{args.scenario}.pt",
         EVAL_SEEDS,
     )
