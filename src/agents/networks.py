@@ -32,3 +32,33 @@ class QNetwork(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.net(x)
+
+class ActorCriticNetwork(nn.Module):
+    """
+    Shared-trunk actor-critic network for PPO.
+
+    The "actor" head outputs action logits (turned into a probability
+    distribution via softmax during action selection). The "critic"
+    head outputs a single scalar: the estimated value of the current
+    state. Sharing the trunk (early layers) is a common efficiency
+    choice -- both heads benefit from the same learned traffic-state
+    features, and it keeps the network small relative to having two
+    fully separate networks.
+    """
+
+    def __init__(self, state_dim: int, action_dim: int, hidden_dim: int = 128):
+        super().__init__()
+        self.shared = nn.Sequential(
+            nn.Linear(state_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+        )
+        self.actor_head = nn.Linear(hidden_dim, action_dim)
+        self.critic_head = nn.Linear(hidden_dim, 1)
+
+    def forward(self, x: torch.Tensor):
+        features = self.shared(x)
+        action_logits = self.actor_head(features)
+        state_value = self.critic_head(features)
+        return action_logits, state_value
