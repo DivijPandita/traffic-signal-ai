@@ -23,3 +23,43 @@ static_weights:
   w5_delay: 0.10
 
 emergency_bonus: 50.0
+
+context_thresholds:
+  # A context is triggered when its condition is met. Emergency
+  # always takes priority over the others if multiple conditions
+  # are simultaneously true (checked in that order in context_detector.py).
+  congested_queue_length: 10.0     # total_queue_length above this => "congested"
+  congested_waiting_time: 60.0     # OR total_waiting_time above this => "congested"
+  high_emission_co2: 25000.0        # total_co2_emission above this => "high_emission"
+
+context_weights:
+  normal:
+    w1_waiting_time: 0.30
+    w2_queue_length: 0.30
+    w3_fuel: 0.15
+    w4_co2: 0.15
+    w5_delay: 0.10
+
+  congested:
+    w1_waiting_time: 0.40
+    w2_queue_length: 0.40
+    w3_fuel: 0.08
+    w4_co2: 0.07
+    w5_delay: 0.05
+
+  high_emission:
+    w1_waiting_time: 0.15
+    w2_queue_length: 0.15
+    w3_fuel: 0.35
+    w4_co2: 0.30
+    w5_delay: 0.05
+
+  emergency:
+    w1_waiting_time: 0.10
+    w2_queue_length: 0.10
+    w3_fuel: 0.05
+    w4_co2: 0.05
+    w5_delay: 0.05
+    # Note: weights here don't need to sum to 1.0 like the others --
+    # during emergency, the emergency_bonus term dominates the reward
+    # regardless, so these are deliberately low across the board.

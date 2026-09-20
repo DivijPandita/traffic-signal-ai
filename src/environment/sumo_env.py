@@ -119,11 +119,12 @@ class TrafficSignalEnv(gym.Env):
         obs = build_state_vector(self.tls_id, green_phases)
 
         totals = get_network_totals()
-
         if self.reward_fn is not None:
-            # context defaults to "normal" until Phase 14 wires in a
-            # real context-detection step here.
-            reward = self.reward_fn.compute(totals, context="normal")
+            # ContextAwareReward detects context live from metrics when
+            # context=None is passed; StaticMultiObjectiveReward ignores
+            # the argument entirely (see Phase 13). This lets the same
+            # environment code work correctly with either reward type.
+            reward = self.reward_fn.compute(totals, context=None)
         else:
             # Fallback placeholder reward, preserved for backward
             # compatibility with Phase 8-12 code/tests that don't pass
@@ -135,6 +136,10 @@ class TrafficSignalEnv(gym.Env):
         terminated = not self._conn.is_simulation_running()
         truncated = self._episode_step_count >= self.max_episode_steps
 
+        active_context = None
+        if self.reward_fn is not None and hasattr(self.reward_fn, "detect_context"):
+            active_context = self.reward_fn.detect_context(totals)
+
         info = {
             "total_queue_length": totals["total_queue_length"],
             "total_waiting_time": totals["total_waiting_time"],
@@ -142,7 +147,9 @@ class TrafficSignalEnv(gym.Env):
             "total_fuel_consumption": totals["total_fuel_consumption"],
             "emergency_present": totals["emergency_present"],
             "arrived_count": arrived_this_rl_step,
+            "active_context": active_context,
         }
+
 
         return obs, reward, terminated, truncated, info
     

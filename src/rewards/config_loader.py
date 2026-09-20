@@ -8,6 +8,17 @@ structure -- they just call build_static_reward().
 import yaml
 
 from rewards.static_multiobjective import StaticMultiObjectiveReward
+from rewards.context_aware_reward import ContextAwareReward
+
+
+def build_context_aware_reward(config_path: str = "configs/reward_config.yaml") -> ContextAwareReward:
+    cfg = load_reward_config(config_path)
+    return ContextAwareReward(
+        normalization=cfg["normalization"],
+        context_weights=cfg["context_weights"],
+        context_thresholds=cfg["context_thresholds"],
+        emergency_bonus=cfg["emergency_bonus"],
+    )
 
 
 def load_reward_config(path: str = "configs/reward_config.yaml") -> dict:
