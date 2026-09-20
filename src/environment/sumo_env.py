@@ -20,6 +20,8 @@ import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 import traci
+import yaml
+from rewards.base_reward import BaseReward
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -46,6 +48,7 @@ class TrafficSignalEnv(gym.Env):
         max_episode_steps: int = 700,
         seed: int = 42,
         use_gui: bool = False,
+        reward_fn: BaseReward = None,
     ):
         super().__init__()
         self.sumocfg_path = sumocfg_path
@@ -55,15 +58,15 @@ class TrafficSignalEnv(gym.Env):
         self.max_episode_steps = max_episode_steps
         self.seed_value = seed
         self.use_gui = use_gui
+        self.reward_fn = reward_fn  # None => fall back to placeholder reward
 
         self._conn = None
         self._action_space_helper = None
         self._episode_step_count = 0
 
-        # Spaces are finalized on the first reset(), once we can query
-        # the traffic light's actual program via TraCI.
         self.action_space = None
         self.observation_space = None
+
 
     def reset(self, seed=None, options=None):
         if self._conn is not None:
@@ -115,9 +118,18 @@ class TrafficSignalEnv(gym.Env):
 
         obs = build_state_vector(self.tls_id, green_phases)
 
-        # --- PLACEHOLDER REWARD (replaced in Phase 13/14) ---
         totals = get_network_totals()
-        reward = -totals["total_waiting_time"]
+
+        if self.reward_fn is not None:
+            # context defaults to "normal" until Phase 14 wires in a
+            # real context-detection step here.
+            reward = self.reward_fn.compute(totals, context="normal")
+        else:
+            # Fallback placeholder reward, preserved for backward
+            # compatibility with Phase 8-12 code/tests that don't pass
+            # a reward_fn explicitly.
+            reward = -totals["total_waiting_time"]
+        
 
         self._episode_step_count += 1
         terminated = not self._conn.is_simulation_running()

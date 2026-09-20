@@ -1,0 +1,25 @@
+# Reward function configuration.
+#
+# normalization_reference: rough scale references used to bring the
+# five reward terms onto a comparable footing before weighting.
+# These are NOT hard caps -- values can exceed 1.0 during heavy
+# congestion, which is fine (the reward can be arbitrarily negative).
+# They were chosen from the live-metric ranges observed in Phase 7/10
+# testing (e.g. total_waiting_time regularly reaching 100+ under
+# fixed-time control, CO2 in the tens of thousands of mg/s).
+
+normalization:
+  waiting_time_ref: 100.0      # seconds (network-wide sum)
+  queue_length_ref: 20.0       # vehicles (network-wide sum)
+  fuel_ref: 30.0                # ml/s (network-wide sum)
+  co2_ref: 40000.0              # mg/s (network-wide sum)
+  delay_ref: 10.0                # vehicle-seconds (network-wide sum)
+
+static_weights:
+  w1_waiting_time: 0.30
+  w2_queue_length: 0.30
+  w3_fuel: 0.15
+  w4_co2: 0.15
+  w5_delay: 0.10
+
+emergency_bonus: 50.0
