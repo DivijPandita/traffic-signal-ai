@@ -20,6 +20,7 @@ from environment.sumo_connection import SumoConnection
 from environment.metrics import get_network_totals
 from agents.dqn_agent import DQNAgent
 import traci
+from agents.ppo_agent import PPOAgent
 
 
 def evaluate_dqn_agent(
@@ -70,6 +71,54 @@ def evaluate_dqn_agent(
     env.close()
     return _aggregate(per_seed_results)
 
+def evaluate_ppo_agent(
+    sumocfg_path: str,
+    model_path: str,
+    eval_seeds: list,
+    max_episode_steps: int = 700,
+) -> dict:
+    """
+    Runs the trained PPO agent in GREEDY mode (select_action_greedy,
+    no sampling) across each seed in eval_seeds -- mirrors
+    evaluate_dqn_agent()'s use of explore=False, so both algorithms
+    are evaluated deterministically and fairly against each other.
+    """
+    env = TrafficSignalEnv(sumocfg_path, max_episode_steps=max_episode_steps)
+    obs, _ = env.reset(seed=eval_seeds[0])
+    action_dim = env.action_space.n
+    state_dim = obs.shape[0]
+
+    agent = PPOAgent(state_dim=state_dim, action_dim=action_dim)
+    agent.load(model_path)
+
+    per_seed_results = []
+    for seed in eval_seeds:
+        obs, info = env.reset(seed=seed)
+        waiting_times, queue_lengths, co2_list, fuel_list = [], [], [], []
+        total_arrived = 0
+
+        done = False
+        while not done:
+            action = agent.select_action_greedy(obs)
+            obs, reward, terminated, truncated, info = env.step(action)
+            done = terminated or truncated
+
+            waiting_times.append(info["total_waiting_time"])
+            queue_lengths.append(info["total_queue_length"])
+            co2_list.append(info["total_co2_emission"])
+            fuel_list.append(info["total_fuel_consumption"])
+            total_arrived += info["arrived_count"]
+
+        per_seed_results.append({
+            "avg_waiting_time": np.mean(waiting_times),
+            "avg_queue_length": np.mean(queue_lengths),
+            "avg_co2": np.mean(co2_list),
+            "avg_fuel": np.mean(fuel_list),
+            "throughput": total_arrived,
+        })
+
+    env.close()
+    return _aggregate(per_seed_results)
 
 def evaluate_fixed_time_live(
     sumocfg_path: str,
@@ -127,22 +176,23 @@ def _aggregate(per_seed_results: list) -> dict:
         aggregated[f"{k}_std"] = float(np.std(values))
     return aggregated
 
-
-def compare(scenario_name: str, sumocfg_path: str, model_path: str, eval_seeds: list):
-    print(f"\n{'='*60}")
+def compare(scenario_name: str, sumocfg_path: str, dqn_model_path: str, ppo_model_path: str, eval_seeds: list):
+    print(f"\n{'='*70}")
     print(f"Scenario: {scenario_name} | Eval seeds: {eval_seeds}")
-    print(f"{'='*60}")
+    print(f"{'='*70}")
 
     fixed = evaluate_fixed_time_live(sumocfg_path, eval_seeds)
-    dqn = evaluate_dqn_agent(sumocfg_path, model_path, eval_seeds)
+    dqn = evaluate_dqn_agent(sumocfg_path, dqn_model_path, eval_seeds)
+    ppo = evaluate_ppo_agent(sumocfg_path, ppo_model_path, eval_seeds)
 
-    print(f"\n{'Metric':<20}{'Fixed-Time':<25}{'DQN':<25}")
+    print(f"\n{'Metric':<20}{'Fixed-Time':<25}{'DQN':<25}{'PPO':<25}")
     for metric in ["avg_waiting_time", "avg_queue_length", "avg_co2", "avg_fuel", "throughput"]:
         f_str = f"{fixed[metric+'_mean']:.2f} ± {fixed[metric+'_std']:.2f}"
         d_str = f"{dqn[metric+'_mean']:.2f} ± {dqn[metric+'_std']:.2f}"
-        print(f"{metric:<20}{f_str:<25}{d_str:<25}")
+        p_str = f"{ppo[metric+'_mean']:.2f} ± {ppo[metric+'_std']:.2f}"
+        print(f"{metric:<20}{f_str:<25}{d_str:<25}{p_str:<25}")
 
-    return {"fixed_time": fixed, "dqn": dqn}
+    return {"fixed_time": fixed, "dqn": dqn, "ppo": ppo}
 
 
 if __name__ == "__main__":
@@ -158,5 +208,6 @@ if __name__ == "__main__":
         args.scenario,
         f"sumo/configs/scenario_{args.scenario}.sumocfg",
         f"models/dqn/dqn_{args.scenario}.pt",
+        f"models/ppo/ppo_{args.scenario}.pt",
         EVAL_SEEDS,
     )

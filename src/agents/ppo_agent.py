@@ -15,6 +15,33 @@ from torch.distributions import Categorical
 
 from agents.networks import ActorCriticNetwork
 
+class RunningNormalizer:
+    """
+    Tracks a running mean and standard deviation (Welford's online
+    algorithm) and uses it to normalize rewards on the fly. This
+    prevents occasional catastrophic rollouts (e.g. a policy that
+    briefly causes gridlock) from producing enormous raw reward
+    magnitudes that blow up the value function's MSE loss and
+    destabilize the whole policy update -- exactly the failure mode
+    causing the loss/avg_wait explosion seen in early PPO training.
+    """
+
+    def __init__(self, epsilon: float = 1e-4):
+        self.mean = 0.0
+        self.var = 1.0
+        self.count = epsilon
+
+    def update(self, x: float):
+        self.count += 1
+        delta = x - self.mean
+        self.mean += delta / self.count
+        delta2 = x - self.mean
+        self.var += (delta * delta2 - self.var) / self.count
+
+    def normalize(self, x: float) -> float:
+        self.update(x)
+        std = (self.var ** 0.5) + 1e-8
+        return x / std  # scale only, don't subtract mean -- preserves reward sign/ordering
 
 class RolloutBuffer:
     """
@@ -57,8 +84,8 @@ class PPOAgent:
         gamma: float = 0.99,
         gae_lambda: float = 0.95,
         clip_epsilon: float = 0.2,
-        value_loss_coef: float = 0.5,
-        entropy_coef: float = 0.01,
+        value_loss_coef: float = 0.25,
+        entropy_coef: float = 0.02,
         num_epochs: int = 4,
         minibatch_size: int = 64,
         device: str = None,
@@ -79,6 +106,7 @@ class PPOAgent:
         self.optimizer = optim.Adam(self.network.parameters(), lr=lr)
 
         self.buffer = RolloutBuffer()
+        self.reward_normalizer = RunningNormalizer()
 
     def select_action(self, state: np.ndarray):
         """
@@ -107,7 +135,8 @@ class PPOAgent:
         return int(action.item())
 
     def store_transition(self, state, action, reward, log_prob, value, done):
-        self.buffer.add(state, action, reward, log_prob, value, done)
+        normalized_reward = self.reward_normalizer.normalize(reward)
+        self.buffer.add(state, action, normalized_reward, log_prob, value, done)
 
     def _compute_gae(self, rewards, values, dones, last_value):
         """
@@ -207,8 +236,17 @@ class PPOAgent:
         return total_loss_log / max(1, num_updates)
 
     def save(self, path: str):
-        torch.save({"network": self.network.state_dict()}, path)
+        torch.save({
+            "network": self.network.state_dict(),
+            "reward_normalizer_mean": self.reward_normalizer.mean,
+            "reward_normalizer_var": self.reward_normalizer.var,
+            "reward_normalizer_count": self.reward_normalizer.count,
+        }, path)
 
     def load(self, path: str):
         checkpoint = torch.load(path, map_location=self.device)
         self.network.load_state_dict(checkpoint["network"])
+        if "reward_normalizer_mean" in checkpoint:
+            self.reward_normalizer.mean = checkpoint["reward_normalizer_mean"]
+            self.reward_normalizer.var = checkpoint["reward_normalizer_var"]
+            self.reward_normalizer.count = checkpoint["reward_normalizer_count"]
